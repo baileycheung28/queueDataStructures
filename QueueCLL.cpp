@@ -58,14 +58,24 @@ QueueCLL::~QueueCLL()
 //Summary: overloaded assignment operator 
 //Pre-Conditions: (none)
 //Post-Conditions:(none)
-//Parameter(s): 
-//Returns: 
+//Parameter(s): rhs - address of object to be copied from 
+//Returns: address of newly copied object from rhs object 
 QueueCLL& QueueCLL::operator=(const QueueCLL& rhs)
 {
    if(this != &rhs)
    {
-      Node *new_rear_ptr = new ; 
+      Node *temp = rhs.rear_ptr; 
+      Node *new_rear_ptr = new Node; //new pointer to new circuluar linked list 
+      rear_ptr = new_rear_ptr; 
+      for(size_type i = 0; i < rhs.numItems; i++)
+      {
+         new_rear_ptr->data = temp->data;
 
+         new_rear_ptr->link = new Node; 
+         new_rear_ptr = new_rear_ptr->link;   
+         temp = temp->link; 
+      }
+      this->numItems = rhs.numItems; 
    }
    return *this;
 }
