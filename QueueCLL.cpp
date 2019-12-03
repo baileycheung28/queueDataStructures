@@ -173,7 +173,7 @@ QueueCLL::size_type QueueCLL::size() const
 //Returns: true if list is empty, else false
 bool QueueCLL::empty() const
 {
-   if(rear_ptr == 0)
+   if(numItems == 0)
       return true; 
    return false; 
 }
