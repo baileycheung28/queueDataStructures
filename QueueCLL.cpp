@@ -99,23 +99,25 @@ QueueCLL& QueueCLL::operator=(const QueueCLL& rhs)
 //Parameter(s): entry - the data to be added into the queue 
 //Returns: (none)
 void QueueCLL::push(const value_type& entry)
-{
+{ 
    if(empty()) //if queue is empty 
    {
+      Node *rear_ptr = new Node; 
       rear_ptr->data = entry; //give data entry
       rear_ptr->link = rear_ptr; //point rear to itself 
+      numItems++; //increment numItems
    }
    else //if queue is not empty, add to the rear 
    {
-      Node *temp = 0; //prevent dangling pointer 
-
-      temp->data = entry; //add entry to temp 
-      temp->link = rear_ptr->link; //link front of the queue to temp
-
-      rear_ptr->link = temp; //put entry at end of queue
-      rear_ptr = temp; //new rear is new entry 
+      Node *newNode = new Node; 
+      cout << "error 1" << endl; 
+      newNode->data = entry; //add entry to temp 
+      newNode->link = rear_ptr->link; //link front of the queue to temp
+      //segmentation fault here 
+      rear_ptr->link = newNode; //put entry at end of queue
+      rear_ptr = newNode; //new rear is new entry 
+      numItems++; //increment numItems
    }
-   numItems++; //increment numItems
 }
 
 //...................................................................
