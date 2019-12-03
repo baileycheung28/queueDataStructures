@@ -31,14 +31,23 @@ QueueCLL::QueueCLL() : rear_ptr(0), numItems(0) {}
 
 //...................................................................
 //Name: QueueCLL(const QueueCLL& src)
-//Summary: copy constructor 
+//Summary: Copy Constructor - initilizes invoking object using const src
 //Pre-Conditions: (none)
 //Post-Conditions: The QueueCLL has been initialized to the src queue
-//Parameter(s): 
+//Parameter(s): src - address of object to be copied from
 //Returns: (none)
 QueueCLL::QueueCLL(const QueueCLL& src) : numItems(src.numItems)
 {
-   rear_ptr = src.rear_ptr; 
+   Node* temp = src.rear_ptr; 
+   Node* new_rear_ptr = new Node; 
+   rear_ptr = new_rear_ptr; 
+   for(size_type i = 0; i < numItems; i++)
+   {
+         new_rear_ptr->data = temp->data;
+         new_rear_ptr->link = new Node; 
+         new_rear_ptr = new_rear_ptr->link;   
+         temp = temp->link; 
+   }
 }
 
 //working 
