@@ -1,5 +1,6 @@
 // FILE: QueueCLL.cpp
-// IMPLEMENTS: QueueCLL (see QueueCLL.h for documentation.)
+// Name: Bailey Cheung
+// IMPLEMENTS: QueueCLL 
 //
 // INVARIANT for the QueueCLL class:
 //   1. The number of items in the QueueCLL is stored in the member
@@ -31,26 +32,27 @@ QueueCLL::QueueCLL() : rear_ptr(0), numItems(0) {}
 
 //...................................................................
 //Name: QueueCLL(const QueueCLL& src)
-//Summary: Copy Constructor - initilizes invoking object using const src
+//Summary: Copy Constructor - initilizes invoking using src
 //Pre-Conditions: (none)
 //Post-Conditions: The QueueCLL has been initialized to the src queue
 //Parameter(s): src - address of object to be copied from
 //Returns: (none)
 QueueCLL::QueueCLL(const QueueCLL& src) : numItems(src.numItems)
 {
-   Node* temp = src.rear_ptr; 
-   Node* new_rear_ptr = new Node; 
+   Node* temp = src.rear_ptr; //temp pointer to source queue
+   Node* new_rear_ptr = new Node; //new node for new queue rear_ptr
    rear_ptr = new_rear_ptr; 
    for(size_type i = 0; i < numItems; i++)
    {
-         new_rear_ptr->data = temp->data;
-         new_rear_ptr->link = new Node; 
-         new_rear_ptr = new_rear_ptr->link;   
-         temp = temp->link; 
+      //copies queue from source to invoking object queue
+      new_rear_ptr->data = temp->data;
+      new_rear_ptr->link = new Node;  
+      new_rear_ptr = new_rear_ptr->link;   
+      temp = temp->link; 
    }
 }
 
-//working 
+//...................................................................
 //Name: ~QueueCLL()
 //Summary: destructor 
 //Pre-Conditions: (none)
@@ -62,7 +64,7 @@ QueueCLL::~QueueCLL()
    delete rear_ptr; 
 }
 
-//working 
+//...................................................................
 //Name: QueueCLL& operator=(const QueueCLL& rhs)
 //Summary: overloaded assignment operator 
 //Pre-Conditions: (none)
@@ -73,20 +75,20 @@ QueueCLL& QueueCLL::operator=(const QueueCLL& rhs)
 {
    if(this != &rhs)
    {
-      Node *temp = rhs.rear_ptr; 
+      Node *temp = rhs.rear_ptr; //temp gets rhs rear_ptr
       Node *new_rear_ptr = new Node; //new pointer to new circuluar linked list 
-      rear_ptr = new_rear_ptr; 
-      for(size_type i = 0; i < rhs.numItems; i++)
+      rear_ptr = new_rear_ptr; //invoking object rear_ptr gets new_rear_ptr
+      for(size_type i = 0; i < rhs.numItems; i++) //iterates through rhs queue
       {
+         //copies data from rhs to invoking object queue
          new_rear_ptr->data = temp->data;
-
          new_rear_ptr->link = new Node; 
          new_rear_ptr = new_rear_ptr->link;   
          temp = temp->link; 
       }
       this->numItems = rhs.numItems; 
    }
-   return *this;
+   return *this; //returns invoking object 
 }
 
 //...................................................................
@@ -99,23 +101,31 @@ QueueCLL& QueueCLL::operator=(const QueueCLL& rhs)
 //Parameter(s): entry - the data to be added into the queue 
 //Returns: (none)
 void QueueCLL::push(const value_type& entry)
-{ 
+{  
    if(empty()) //if queue is empty 
    {
-      Node *rear_ptr = new Node; 
-      rear_ptr->data = entry; //give data entry
+      rear_ptr = new Node; //create new node for rear_ptr 
+      rear_ptr->data = entry; //fill in data of rear_ptr
       rear_ptr->link = rear_ptr; //point rear to itself 
       numItems++; //increment numItems
    }
-   else //if queue is not empty, add to the rear 
+   else if(numItems == 1) //if queue has only one item 
    {
-      Node *newNode = new Node; 
-      cout << "error 1" << endl; 
-      newNode->data = entry; //add entry to temp 
-      newNode->link = rear_ptr->link; //link front of the queue to temp
-      //segmentation fault here 
-      rear_ptr->link = newNode; //put entry at end of queue
-      rear_ptr = newNode; //new rear is new entry 
+      Node* newNode = new Node; //creates new node for new item added 
+      newNode->data = entry; //fill in data of new node
+      rear_ptr->link = newNode; //point rear_ptr to the new node
+      newNode->link = rear_ptr; //point the new node to the rear_ptr
+      rear_ptr = newNode; //put new node at the end of the queue 
+      numItems++; //increment numItems
+   }
+   else //if queue has more than one item 
+   {
+      Node *temp = rear_ptr->link; //points to the front of the queue
+      Node *newNode = new Node; //creates new node for new item added 
+      newNode->data = entry; //fill in data of new node
+      newNode->link = temp; //point link to front of the queue 
+      rear_ptr->link = newNode; //put entry after rear_ptr
+      rear_ptr = newNode; //rear_ptr is to the new entry 
       numItems++; //increment numItems
    }
 }
@@ -128,12 +138,19 @@ void QueueCLL::push(const value_type& entry)
 //Post-Conditions: The return value is the data of the front item of
 //    the queue, but the queue is unchanged.
 //Parameter(s): (none)
-//Returns: (none)
+//Returns: data value of front item 
 QueueCLL::value_type QueueCLL::front( ) const
 {
-   assert(size() > 0); 
-   Node *front = rear_ptr->link; //temp pointer to front of queue 
-   return front->data; 
+   assert(size() > 0); //fulfill precondition 
+   if(size() == 1)
+   {
+      return rear_ptr->data;
+   } 
+   else 
+   {
+      Node* front = rear_ptr->link; 
+      return front->data; 
+   }
 }
 
 //...................................................................
@@ -145,18 +162,16 @@ QueueCLL::value_type QueueCLL::front( ) const
 //Returns: (none)
 void QueueCLL::pop( )
 {
-   assert(size() > 0); //meet precondition 
+   assert(size() > 0); //fulfill precondition 
    if(size() == 1) //only one item in the queue 
    {
-      rear_ptr->link = 0; //no dangling pointer
+      rear_ptr->link = rear_ptr; //set rear_ptr to itself 
       rear_ptr = 0; //set rear_ptr to null value 
    }
-   else 
+   else //more than one item in the queue 
    {
-      Node *newFrontTemp = rear_ptr->link->link; //pointer to the new
-                                                 //front of the queue
-      rear_ptr->link = newFrontTemp; //point rear of queue to the new
-                                     //front 
+      Node *newFrontTemp = rear_ptr->link->link; //pointer to the new front 
+      rear_ptr->link = newFrontTemp; //point rear of queue to the new front
    }
    numItems--; //decrement numItems 
 }
@@ -176,7 +191,7 @@ QueueCLL::size_type QueueCLL::size() const
 
 //...................................................................
 //Name: bool empty() const
-//Summary: constant member function - determines if the heap is empty 
+//Summary: constant member function - determines if the queue is empty 
 //Pre-Conditions: (none)
 //Post-Conditions: The return value is true if the queue is empty,
 //    otherwise false.
@@ -184,30 +199,29 @@ QueueCLL::size_type QueueCLL::size() const
 //Returns: true if list is empty, else false
 bool QueueCLL::empty() const
 {
-   if(numItems == 0)
+   if(size() == 0) //if size of queue is 0 
       return true; 
-   return false; 
+   else //if size of queue is not 0 
+      return false; 
 }
 
 //...................................................................
 //Name: value_type peek(size_type n) const
-//Summary: constant member function - 
+//Summary: constant member function - peeks at data at n-th item 
 //Pre-Conditions: size() > 0.
 //Post-Conditions:The return value is the data of the n-th item
 //    (front item is 1st item) of the queue, with
 //    circular wraparound.
-//Parameter(s): (none) 
-//Returns: 
+//Parameter(s): the queue item (n) the user wishes to view 
+//Returns: data value at the specified queue item 
 QueueCLL::value_type QueueCLL::peek(size_type n) const
 {
-   assert(size() > 0); 
-   int i = n; 
-   Node* peekTemp = rear_ptr->link; 
-   while(i > 0)
+   assert(size() > 0); //fulfill precondition 
+   Node* peekTemp = rear_ptr->link; //assign temp pointer to front of queue
+   while(n > 0) //while n-th item has not been reached 
    {
-      peekTemp = peekTemp->link; 
-      i--;  
+      peekTemp = peekTemp->link; //move onto the next item 
+      n--; //decrement n
    }
-   return peekTemp->data; 
+   return peekTemp->data; //data at n-th item 
 }
-
